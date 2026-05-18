@@ -1,0 +1,65 @@
+# Запуск:
+#   docker compose --profile dev up -d   # с mock 1С (для разработки)
+#   docker compose up -d                  # без мока (с реальной 1С)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: medbot
+      POSTGRES_USER: medbot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-medbot}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mock_1c:
+    profiles: ["dev"]
+    build: .
+    command: uvicorn mock_1c.server:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  bot:
+    build: .
+    command: python main.py
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api:
+    build: .
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pg_data:
