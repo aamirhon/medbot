@@ -1,0 +1,58 @@
+/* Albatros Healthcare — цветовая схема */
+:root {
+  --color-bg:         #ffffff;
+  --color-bg-soft:    #f5f6f8;
+  --color-bg-muted:   #eef0f3;
+  --color-text:       #1a1a1a;
+  --color-text-soft:  #6b6b6b;
+  --color-text-muted: #9ba0a6;
+  --color-border:     #e4e7eb;
+  --color-accent:     #0066b3;
+  --color-accent-hover: #004f8a;
+  --color-success:    #2e9c5e;
+  --color-warning:    #e08e1f;
+  --color-danger:     #c83a3a;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+/* Telegram dark theme — переопределяем переменные */
+[data-theme="dark"] {
+  --color-bg:         #17181c;
+  --color-bg-soft:    #1f2025;
+  --color-bg-muted:   #292a30;
+  --color-text:       #f5f5f5;
+  --color-text-soft:  #b0b0b0;
+  --color-text-muted: #7a7a7a;
+  --color-border:     #2e2f35;
+  --color-accent:     #1f8ee0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}

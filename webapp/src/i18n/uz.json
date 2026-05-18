@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "Albatros Healthcare",
+    "tagline": "Laboratoriyalar uchun reagentlar va sarflanadigan materiallar"
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "catalog": "Katalog",
+    "cart": "Savatcha",
+    "orders": "Buyurtmalar",
+    "profile": "Profil"
+  },
+  "home": {
+    "greeting": "Salom, {{name}}",
+    "categories_title": "Kategoriyalar",
+    "all_products": "Barcha mahsulotlar",
+    "limits_warning": "Hisobingizda cheklovlar mavjud. Menejer bilan bog'laning."
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi",
+    "retry": "Qayta urinish",
+    "search": "Qidiruv",
+    "back": "Orqaga",
+    "products": "mahsulot",
+    "language": "Til"
+  }
+}
