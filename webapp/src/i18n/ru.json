@@ -23,6 +23,29 @@
     "search": "Поиск",
     "back": "Назад",
     "products": "товаров",
-    "language": "Язык"
+    "language": "Язык",
+    "coming_soon": "скоро"
+  },
+  "catalog": {
+    "title": "Каталог",
+    "search_placeholder": "Поиск по названию или артикулу",
+    "filters": "Фильтры",
+    "brand": "Бренд",
+    "all_brands": "Все бренды",
+    "category": "Категория",
+    "all_categories": "Все категории",
+    "price": "Цена",
+    "price_from": "От",
+    "price_to": "До",
+    "in_stock_only": "Только в наличии",
+    "reset_filters": "Сбросить фильтры",
+    "found": "{{count}} позиций",
+    "on_request": "По запросу",
+    "currency": "сум",
+    "add": "В корзину",
+    "loading": "Загрузка...",
+    "load_error": "Не удалось загрузить товары",
+    "retry": "Повторить",
+    "empty": "Товары не найдены"
   }
 }

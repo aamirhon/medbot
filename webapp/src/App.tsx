@@ -1,36 +1,30 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+/**
+ * App.tsx — корневой роутер Mini App
+ *
+ * Изменения vs предыдущей версии:
+ *   • /catalog теперь показывает настоящий <Catalog /> вместо заглушки
+ *   • Stubs.tsx остаётся только для /cart и /orders
+ */
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Header } from "./components/Header";
+import { BottomNav } from "./components/BottomNav";
+import Home from "./pages/Home";
+import Catalog from "./pages/Catalog";
+import { CartStub, OrdersStub } from "./pages/Stubs";
 
-import { Header } from './components/Header';
-import { BottomNav } from './components/BottomNav';
-import { Home } from './pages/Home';
-import { Catalog, Cart } from './pages/Stubs';
-import { tg } from './telegram';
-
-import './i18n';
-import './styles/global.css';
-
-function App() {
-  useEffect(() => {
-    tg.init();
-    // Применяем тему Telegram (если работаем в нём)
-    document.documentElement.setAttribute('data-theme', tg.colorScheme);
-  }, []);
-
+export default function App() {
   return (
-    <BrowserRouter>
+    <>
       <Header />
-      <main style={{ paddingBottom: 70 }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/catalog" element={<Catalog />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/orders" element={<Cart />} />
-        </Routes>
-      </main>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/catalog" element={<Catalog />} />
+        <Route path="/cart" element={<CartStub />} />
+        <Route path="/orders" element={<OrdersStub />} />
+        {/* Ловим неизвестные пути */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
       <BottomNav />
-    </BrowserRouter>
+    </>
   );
 }
-
-export default App;

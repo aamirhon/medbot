@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { apiClient } from '../api';
+import { getMe, getCategories } from '../api';
 import type { Category, Me } from '../api';
 import styles from './Home.module.css';
 
@@ -16,7 +16,7 @@ export function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([apiClient.me(), apiClient.categories()])
+    Promise.all([getMe(), getCategories()])
       .then(([meData, cats]) => {
         setMe(meData);
         // Только категории верхнего уровня (без parent)
@@ -72,6 +72,8 @@ export function Home() {
     </div>
   );
 }
+
+export default Home;
 
 /** Простая иконка по первой букве — заменим на нормальные иконки позже */
 function getCategoryIcon(name: string): string {

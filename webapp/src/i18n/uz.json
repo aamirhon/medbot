@@ -23,6 +23,29 @@
     "search": "Qidiruv",
     "back": "Orqaga",
     "products": "mahsulot",
-    "language": "Til"
+    "language": "Til",
+    "coming_soon": "tez orada"
+  },
+  "catalog": {
+    "title": "Katalog",
+    "search_placeholder": "Nomi yoki artikul bo'yicha qidirish",
+    "filters": "Filtrlar",
+    "brand": "Brend",
+    "all_brands": "Barcha brendlar",
+    "category": "Kategoriya",
+    "all_categories": "Barcha kategoriyalar",
+    "price": "Narx",
+    "price_from": "Dan",
+    "price_to": "Gacha",
+    "in_stock_only": "Faqat mavjudlar",
+    "reset_filters": "Filtrlarni tozalash",
+    "found": "{{count}} ta tovar",
+    "on_request": "So'rov bo'yicha",
+    "currency": "so'm",
+    "add": "Savatga",
+    "loading": "Yuklanmoqda...",
+    "load_error": "Tovarlarni yuklab bo'lmadi",
+    "retry": "Qayta urinish",
+    "empty": "Tovarlar topilmadi"
   }
 }

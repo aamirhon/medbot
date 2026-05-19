@@ -1,25 +1,31 @@
-import { useTranslation } from 'react-i18next';
+/**
+ * Stubs.tsx — заглушки для страниц, которые ещё не реализованы.
+ * Catalog убран отсюда — он теперь в pages/Catalog.tsx.
+ */
+import { useTranslation } from "react-i18next";
 
-export function Catalog() {
+function StubPage({ labelKey }: { labelKey: string }) {
   const { t } = useTranslation();
   return (
-    <div style={{ padding: 20 }}>
-      <h2>{t('nav.catalog')}</h2>
-      <p style={{ color: 'var(--color-text-soft)' }}>
-        Раздел в разработке. Здесь будет каталог товаров с поиском и фильтрами.
-      </p>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "60vh",
+        color: "var(--tg-theme-hint-color, #8e8e93)",
+        fontSize: 16,
+      }}
+    >
+      {t(labelKey)} — {t("common.coming_soon")}
     </div>
   );
 }
 
-export function Cart() {
-  const { t } = useTranslation();
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>{t('nav.cart')}</h2>
-      <p style={{ color: 'var(--color-text-soft)' }}>
-        Корзина пуста. Скоро здесь появятся товары.
-      </p>
-    </div>
-  );
+export function CartStub() {
+  return <StubPage labelKey="nav.cart" />;
+}
+
+export function OrdersStub() {
+  return <StubPage labelKey="nav.orders" />;
 }
