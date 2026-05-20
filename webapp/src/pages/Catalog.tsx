@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Brand, Category, Product, ProductFilters } from "../api";
 import { getBrands, getCategories, getProducts } from "../api";
@@ -80,6 +80,7 @@ function ProductGridItem({
 export default function Catalog() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   // ── Данные ────────────────────────────────────────────────────────────────
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -100,6 +101,19 @@ export default function Catalog() {
   const [showFilters, setShowFilters] = useState(false);
 
   const PER_PAGE = 20;
+
+  // ── Синхронизация фильтров при смене URL (например, BottomNav → /catalog) ─
+  // location.search — строка, сравнивается по значению, надёжнее чем объект searchParams
+  useEffect(() => {
+    setCategoryId(searchParams.get("category") ?? "");
+    setBrandId(searchParams.get("brand") ?? "");
+    if (!location.search) {
+      setSearch("");
+      setMinPrice("");
+      setMaxPrice("");
+      setInStockOnly(false);
+    }
+  }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Дебаунс поиска ────────────────────────────────────────────────────────
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

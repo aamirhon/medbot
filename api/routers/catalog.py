@@ -139,32 +139,43 @@ async def list_brands(_: User = Depends(get_current_user)):
 async def list_categories(_: User = Depends(get_current_user)):
     """
     Все категории с количеством товаров.
-    product_count — прямые товары категории (не суммирует подкатегории),
-    чтобы фронт мог самостоятельно строить дерево.
+    product_count для родительских категорий — сумма товаров всех дочерних.
     """
     async with get_session() as db:
-        result = await db.execute(
-            select(
-                Category.id,
-                Category.name,
-                Category.parent_id,
-                func.count(Product.id).label("product_count"),
-            )
-            .outerjoin(
-                Product,
-                (Product.category_id == Category.id) & (Product.is_active == True),
-            )
-            .group_by(Category.id)
-            .order_by(Category.sort_order, Category.name)
+        # 1. Все категории
+        cats_result = await db.execute(
+            select(Category).order_by(Category.sort_order, Category.name)
         )
+        all_cats = cats_result.scalars().all()
+
+        # 2. Прямой подсчёт товаров по каждой категории
+        counts_result = await db.execute(
+            select(Product.category_id, func.count(Product.id).label("cnt"))
+            .where(Product.is_active == True)
+            .where(Product.category_id.isnot(None))
+            .group_by(Product.category_id)
+        )
+        direct_counts = {row.category_id: row.cnt for row in counts_result}
+
+        # 3. Карта parent_id → [child_ids]
+        children_map: dict[str, list[str]] = {}
+        for cat in all_cats:
+            if cat.parent_id:
+                children_map.setdefault(cat.parent_id, []).append(cat.id)
+
+        # 4. Рекурсивная сумма (работает для двух уровней и глубже)
+        def total_count(cat_id: str) -> int:
+            own = direct_counts.get(cat_id, 0)
+            return own + sum(total_count(cid) for cid in children_map.get(cat_id, []))
+
         return [
             CategoryOut(
-                id=r.id,
-                name=r.name,
-                parent_id=r.parent_id,
-                product_count=r.product_count,
+                id=cat.id,
+                name=cat.name,
+                parent_id=cat.parent_id,
+                product_count=total_count(cat.id),
             )
-            for r in result
+            for cat in all_cats
         ]
 
 
