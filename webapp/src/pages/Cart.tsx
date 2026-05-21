@@ -95,8 +95,12 @@ export default function Cart() {
           {t("total")}:{" "}
           <strong>{cart.total_amount.toLocaleString("ru-RU")} {t("catalog.currency")}</strong>
         </div>
-        <button className={styles.checkoutBtn} disabled>
-          {t("checkout")} — {t("coming_soon")}
+        <button
+          className={styles.checkoutBtn}
+          disabled={cart.has_unavailable}
+          onClick={() => navigate('/checkout')}
+        >
+          {cart.has_unavailable ? t('remove_unavailable') : t('checkout')}
         </button>
         <button className={styles.clearBtn} onClick={() => setConfirmClear(true)}>
           {t("clear_cart")}

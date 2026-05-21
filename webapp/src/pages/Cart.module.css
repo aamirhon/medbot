@@ -200,11 +200,12 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  opacity: 0.5;
   font-family: inherit;
+  transition: opacity 0.15s;
 }
 
 .checkoutBtn:disabled {
+  opacity: 0.45;
   cursor: default;
 }
 

@@ -116,6 +116,52 @@ export const getProducts = (filters: ProductFilters = {}): Promise<ProductListRe
 export const getProduct = (id: string): Promise<Product> =>
   api.get<Product>(`/catalog/products/${id}`).then((r) => r.data);
 
+// ─── Order types ──────────────────────────────────────────────────────────────
+
+export interface OrderItem {
+  id: string;
+  variant_id: string;
+  product_name: string;
+  pack_size: string;
+  sku: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+}
+
+export interface Order {
+  id: string;
+  status: string;
+  total_amount: number;
+  comment: string;
+  invoice_number: string | null;
+  invoice_url: string | null;
+  contract_url: string | null;
+  created_at: string;
+  paid_at: string | null;
+  items: OrderItem[];
+}
+
+export interface OrderListItem {
+  id: string;
+  status: string;
+  total_amount: number;
+  invoice_number: string | null;
+  items_count: number;
+  created_at: string;
+}
+
+// ─── Order API ────────────────────────────────────────────────────────────────
+
+export const orderApi = {
+  create: (comment: string): Promise<Order> =>
+    api.post<Order>('/orders', { comment }).then((r) => r.data),
+  list: (): Promise<OrderListItem[]> =>
+    api.get<OrderListItem[]>('/orders').then((r) => r.data),
+  get: (id: string): Promise<Order> =>
+    api.get<Order>(`/orders/${id}`).then((r) => r.data),
+};
+
 // ─── Cart types ───────────────────────────────────────────────────────────────
 
 export interface CartVariantItem {

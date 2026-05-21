@@ -1,0 +1,218 @@
+.page {
+  padding: 16px;
+  padding-bottom: calc(var(--nav-height) + 24px);
+}
+
+/* ─── Loading / error ──────────────────────────────────────────────────────── */
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  padding: 24px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--tg-theme-button-color, #007aff);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.emptyText {
+  font-size: 16px;
+  color: var(--tg-theme-hint-color, #999);
+  margin: 0;
+}
+
+/* ─── Success banner ───────────────────────────────────────────────────────── */
+
+.successBanner {
+  background: #10b981;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+
+.header {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orderTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.statusBadge {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+.orderDate {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, #8e8e93);
+}
+
+/* ─── Sections ─────────────────────────────────────────────────────────────── */
+
+.section {
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tg-theme-hint-color, #8e8e93);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 10px;
+}
+
+/* ─── Documents ────────────────────────────────────────────────────────────── */
+
+.docButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.docBtn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--tg-theme-button-color, #007aff);
+  background: transparent;
+  color: var(--tg-theme-button-color, #007aff);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: opacity 0.15s;
+}
+
+.docBtn:active {
+  opacity: 0.7;
+}
+
+.docsHint {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color, #8e8e93);
+  margin: 0;
+}
+
+/* ─── Items ────────────────────────────────────────────────────────────────── */
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.orderItem:first-child {
+  padding-top: 0;
+}
+
+.orderItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.itemLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.itemPack {
+  font-size: 12px;
+  color: var(--tg-theme-hint-color, #8e8e93);
+  margin-top: 2px;
+}
+
+.itemRight {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* ─── Total ────────────────────────────────────────────────────────────────── */
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+.totalRow strong {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* ─── Comment ──────────────────────────────────────────────────────────────── */
+
+.commentBlock {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.commentLabel {
+  font-weight: 600;
+}
+
+/* ─── Payment hint ─────────────────────────────────────────────────────────── */
+
+.paymentHint {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, #8e8e93);
+  line-height: 1.5;
+  text-align: center;
+}
