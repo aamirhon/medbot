@@ -1,14 +1,25 @@
 """
 Сервис создания заказа.
-Создаём заказ в БД → отправляем в 1С → получаем счёт и договор → шлём клиенту.
+
+SQL-миграции (если OrderItem был создан без снимочных полей):
+  ALTER TABLE order_items ADD COLUMN product_name VARCHAR(255) DEFAULT '';
+  ALTER TABLE order_items ADD COLUMN pack_size VARCHAR(100) DEFAULT '';
+  ALTER TABLE order_items ADD COLUMN sku VARCHAR(100) DEFAULT '';
+
+В текущей модели эти поля уже есть — миграция не требуется.
 """
 import logging
+from datetime import datetime, timezone
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Order, OrderItem, CartItem, Organization, User, Product
+from models import (
+    Order, OrderItem, OrderEvent,
+    CartItem, ProductVariant, Product,
+    Organization, User,
+)
 from services.onec_client import Client1C, OneCError
 
 logger = logging.getLogger(__name__)
@@ -25,28 +36,30 @@ async def create_order_from_cart(
     organization: Organization,
     comment: str = "",
 ) -> Order:
-    """
-    1. Берём корзину
-    2. Создаём Order + OrderItems в БД (status=draft)
-    3. Отправляем в 1С (метод create_order_with_invoice)
-    4. Получаем invoice_url, contract_url, invoice_number
-    5. Сохраняем эти поля, переводим статус → invoiced
-    6. Очищаем корзину
-    """
-    # ── 1. Корзина ──
-    result = await db.execute(
-        select(CartItem).where(CartItem.user_id == user.id)
+    # 1. Корзина
+    cart_result = await db.execute(
+        select(CartItem, ProductVariant, Product)
+        .join(ProductVariant, CartItem.variant_id == ProductVariant.id)
+        .join(Product, ProductVariant.product_id == Product.id)
+        .where(CartItem.user_id == user.id)
     )
-    cart_items = result.scalars().all()
-    if not cart_items:
+    rows = cart_result.all()
+    if not rows:
         raise OrderCreationError("Корзина пуста")
 
-    # Подгружаем товары
-    product_ids = [c.product_id for c in cart_items]
-    result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
-    products = {p.id: p for p in result.scalars().all()}
+    # 2. Валидация
+    for ci, variant, product in rows:
+        if not variant.is_orderable:
+            raise OrderCreationError(
+                "В корзине есть товары 'по запросу'. Удалите их перед оформлением."
+            )
+        if ci.quantity > variant.stock_qty:
+            raise OrderCreationError(
+                f"Недостаточно товара на складе: {product.name} ({variant.pack_size}). "
+                f"Доступно: {variant.stock_qty}"
+            )
 
-    # ── 2. Заказ в БД ──
+    # 3. Создать Order
     order = Order(
         user_id=user.id,
         org_id=organization.id,
@@ -56,73 +69,79 @@ async def create_order_from_cart(
     db.add(order)
     await db.flush()
 
+    # 4. Создать OrderItem со снимком данных
     total = Decimal(0)
-    items_for_1c = []
-
-    for ci in cart_items:
-        product = products[ci.product_id]
-        subtotal = product.price * ci.quantity
-
-        item = OrderItem(
+    for ci, variant, product in rows:
+        unit_price = variant.price or Decimal(0)
+        subtotal = unit_price * ci.quantity
+        db.add(OrderItem(
             order_id=order.id,
-            product_id=product.id,
+            variant_id=variant.id,
+            product_name=product.name,
+            pack_size=variant.pack_size,
+            sku=variant.sku,
             quantity=ci.quantity,
-            unit_price=product.price,
+            unit_price=unit_price,
             subtotal=subtotal,
-        )
-        db.add(item)
+        ))
         total += subtotal
 
-        items_for_1c.append({
-            "sku": product.sku,
-            "one_c_id": product.one_c_id,
-            "name": product.name,
-            "qty": ci.quantity,
-            "unit_price": float(product.price),
-            "subtotal": float(subtotal),
-        })
-
+    # 5. Итог
     order.total_amount = total
     order.status = "pending_1c"
     await db.flush()
 
-    # ── 3. Отправка в 1С ──
+    # 6. Payload для 1С
+    items_for_1c = [
+        {
+            "variant_one_c_id": variant.one_c_id,
+            "product_one_c_id": product.one_c_id,
+            "sku": variant.sku,
+            "name": f"{product.name} ({variant.pack_size})",
+            "qty": ci.quantity,
+            "unit_price": float(variant.price or 0),
+            "subtotal": float((variant.price or 0) * ci.quantity),
+        }
+        for ci, variant, product in rows
+    ]
+
     payload = {
-        "external_ref":      order.id,
-        "client_one_c_id":   organization.one_c_id,
-        "client_inn":        organization.inn,
-        "items":             items_for_1c,
-        "total":             float(total),
-        "comment":           comment,
+        "external_ref":    order.id,
+        "client_one_c_id": organization.one_c_id,
+        "client_inn":      organization.inn,
+        "items":           items_for_1c,
+        "total":           float(order.total_amount),
+        "comment":         comment,
     }
 
+    # 7. Отправить в 1С
     try:
-        result = await onec.create_order_with_invoice(payload)
+        result_1c = await onec.create_order_with_invoice(payload)
     except OneCError as exc:
         logger.error("Failed to create order in 1С: %s", exc)
-        order.status = "draft"  # откатываем статус, заказ можно повторно отправить
+        order.status = "draft"
         await db.commit()
-        raise OrderCreationError(
-            "Не удалось создать заказ в 1С. "
-            "Попробуйте позже или свяжитесь с менеджером."
-        )
+        raise OrderCreationError("Не удалось создать заказ в 1С. Попробуйте позже.")
 
-    # ── 4-5. Сохраняем результат от 1С ──
-    order.one_c_id        = result.get("one_c_id")
-    order.invoice_number  = result.get("invoice_number")
-    order.invoice_url     = result.get("invoice_url")
-    order.contract_url    = result.get("contract_url")
-    order.synced_to_1c    = True
-    order.status          = "invoiced"
+    order.one_c_id       = result_1c.get("one_c_id")
+    order.invoice_number = result_1c.get("invoice_number")
+    order.invoice_url    = result_1c.get("invoice_url")
+    order.contract_url   = result_1c.get("contract_url")
+    order.synced_to_1c   = True
+    order.synced_at      = datetime.now(timezone.utc)
+    order.status         = "invoiced"
 
-    # Если 1С пересчитала тотал — обновляем
-    if "total_amount" in result:
-        order.total_amount = Decimal(str(result["total_amount"]))
+    # 8. Очистить корзину
+    await db.execute(delete(CartItem).where(CartItem.user_id == user.id))
 
-    # ── 6. Очищаем корзину ──
-    for ci in cart_items:
-        await db.delete(ci)
+    # 9. Событие
+    db.add(OrderEvent(
+        order_id=order.id,
+        event_type="created",
+        payload={"description": "Заказ создан и отправлен в 1С"},
+    ))
 
+    # 10. Сохранить
     await db.commit()
     await db.refresh(order)
     return order

@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useCart } from '../context/CartContext';
 import styles from './BottomNav.module.css';
 
 const tabs = [
@@ -13,6 +14,7 @@ export function BottomNav() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const { totalItems } = useCart();
 
   const handleCatalogClick = () => {
     navigate('/catalog', { replace: location.pathname === '/catalog' });
@@ -40,7 +42,14 @@ export function BottomNav() {
             to={tab.path}
             className={`${styles.tab} ${isActive ? styles.active : ''}`}
           >
-            <span className={styles.icon}>{tab.icon}</span>
+            <span className={styles.iconWrap}>
+              <span className={styles.icon}>{tab.icon}</span>
+              {tab.path === '/cart' && totalItems > 0 && (
+                <span className={styles.badge}>
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
+            </span>
             <span className={styles.label}>{t(tab.label)}</span>
           </Link>
         );

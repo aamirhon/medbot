@@ -116,4 +116,44 @@ export const getProducts = (filters: ProductFilters = {}): Promise<ProductListRe
 export const getProduct = (id: string): Promise<Product> =>
   api.get<Product>(`/catalog/products/${id}`).then((r) => r.data);
 
+// ─── Cart types ───────────────────────────────────────────────────────────────
+
+export interface CartVariantItem {
+  id: string;
+  variant_id: string;
+  product_id: string;
+  product_name: string;
+  short_name: string;
+  pack_size: string;
+  sku: string;
+  unit: string;
+  unit_price: number;
+  quantity: number;
+  subtotal: number;
+  image_url: string;
+  stock_qty: number;
+  in_stock: boolean;
+  is_orderable: boolean;
+}
+
+export interface Cart {
+  items: CartVariantItem[];
+  total_items: number;
+  total_amount: number;
+  has_unavailable: boolean;
+}
+
+// ─── Cart API ─────────────────────────────────────────────────────────────────
+
+export const cartApi = {
+  getCart: () => api.get<Cart>("/cart").then((r) => r.data),
+  addItem: (variant_id: string, quantity: number) =>
+    api.post<Cart>("/cart/items", { variant_id, quantity }).then((r) => r.data),
+  updateItem: (item_id: string, quantity: number) =>
+    api.patch<Cart>(`/cart/items/${item_id}`, { quantity }).then((r) => r.data),
+  removeItem: (item_id: string) =>
+    api.delete<Cart>(`/cart/items/${item_id}`).then((r) => r.data),
+  clearCart: () => api.delete<Cart>("/cart").then((r) => r.data),
+};
+
 export default api;

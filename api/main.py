@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from api.auth import get_current_user
-from api.routers import catalog
+from api.routers import catalog, cart, orders
 from models import User, Organization
 from db import get_session
 
@@ -31,6 +31,8 @@ app.add_middleware(
 )
 
 app.include_router(catalog.router)
+app.include_router(cart.router)
+app.include_router(orders.router)
 
 
 # ─── Auth check / user info ──────────────────────────────────────────────────

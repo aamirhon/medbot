@@ -1,0 +1,182 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-radius: 16px 16px 0 0;
+  padding: 12px 20px 32px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.handle {
+  width: 40px;
+  height: 4px;
+  background: var(--tg-theme-hint-color, #999);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+  opacity: 0.4;
+}
+
+.skeleton {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--tg-theme-hint-color, #999);
+  font-size: 14px;
+}
+
+.productName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.brand {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, #999);
+  margin: 0 0 16px;
+}
+
+.variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.variantBtn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--tg-theme-button-color, #007aff);
+  background: transparent;
+  color: var(--tg-theme-button-color, #007aff);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.variantBtnSelected {
+  background: var(--tg-theme-button-color, #007aff);
+  color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.variantBtnDisabled {
+  border-color: var(--tg-theme-hint-color, #ccc);
+  color: var(--tg-theme-hint-color, #999);
+  cursor: default;
+  opacity: 0.6;
+}
+
+.contactMsg {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color, #999);
+  text-align: center;
+  padding: 16px 0;
+  margin: 0;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 16px;
+  width: fit-content;
+  border: 1.5px solid var(--tg-theme-button-color, #007aff);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.counterBtn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--tg-theme-button-color, #007aff);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+}
+
+.counterBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.counterBtn:not(:disabled):active {
+  background: rgba(0, 122, 255, 0.08);
+}
+
+.counterVal {
+  min-width: 36px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.totalLine {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.addBtn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--tg-theme-button-color, #007aff);
+  color: var(--tg-theme-button-text-color, #ffffff);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  font-family: inherit;
+}
+
+.addBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.addedMsg {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: #34c759;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.errorMsg {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #ff3b30;
+  text-align: center;
+}

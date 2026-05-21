@@ -45,6 +45,7 @@ class VariantOut(BaseModel):
     price: Optional[float]  # None = "По запросу"
     is_orderable: bool
     stock_qty: int
+    unit: str
 
 
 class ProductOut(BaseModel):
@@ -98,6 +99,7 @@ def _make_product_out(
             price=float(v.price) if v.price is not None else None,
             is_orderable=v.is_orderable,
             stock_qty=v.stock_qty,
+            unit=v.unit,
         )
         for v in variants
     ]

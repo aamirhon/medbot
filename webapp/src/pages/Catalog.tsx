@@ -3,6 +3,7 @@ import { useSearchParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Brand, Category, Product, ProductFilters } from "../api";
 import { getBrands, getCategories, getProducts } from "../api";
+import { ProductSheet } from "../components/ProductSheet";
 import styles from "./Catalog.module.css";
 
 // ─── Вспомогательные компоненты ──────────────────────────────────────────────
@@ -169,10 +170,11 @@ export default function Catalog() {
     setPage(1);
   }, [categoryId, brandId, debouncedSearch, minPrice, maxPrice, inStockOnly]);
 
-  // ── Навигация к товару ────────────────────────────────────────────────────
+  // ── ProductSheet ──────────────────────────────────────────────────────────
+  const [sheetProductId, setSheetProductId] = useState<string | null>(null);
+
   const handleSelect = (id: string) => {
-    // TODO: navigate to /product/:id в следующем этапе
-    console.log("open product", id);
+    setSheetProductId(id);
   };
 
   // ── Сброс всех фильтров ────────────────────────────────────────────────────
@@ -365,6 +367,10 @@ export default function Catalog() {
           )}
         </>
       )}
+      <ProductSheet
+        productId={sheetProductId}
+        onClose={() => setSheetProductId(null)}
+      />
     </div>
   );
 }
