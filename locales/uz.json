@@ -1,0 +1,33 @@
+{
+  "menu": {
+    "catalog":  "📦 Katalogni ochish",
+    "orders":   "📋 Buyurtmalarim",
+    "language": "🌐 Til",
+    "help":     "ℹ️ Yordam",
+    "contacts": "📞 Kontaktlar"
+  },
+  "greeting": "Salom, {organization_name}!",
+  "help_text": "ℹ️ <b>Botdan foydalanish</b>\n\n• «📦 Katalogni ochish» tugmasini bosing — do'kon Telegram ichida ochiladi.\n• Mahsulot tanlang, savatga qo'shing va buyurtma bering.\n• Buyurtma holatini «📋 Buyurtmalarim» bo'limida kuzating.\n\nSavollar yoki muammolar bo'lsa — «📞 Kontaktlar» orqali menejer bilan bog'laning.",
+  "contacts_text": "📞 <b>Kontaktlar</b>\n\nSavdo menejeri:\n📞 +998 71 XXX-XX-XX\n✉️ sales@albatros-med.uz\n\nIsh vaqti: Du–Ju, 9:00–18:00 (UTC+5)",
+  "orders": {
+    "header":      "📋 <b>Oxirgi buyurtmalaringiz:</b>\n",
+    "empty":       "Sizda hali buyurtma yo'q.\n\nBirinchi buyurtmangizni berish uchun katalogni oching.",
+    "total_label": "Jami",
+    "invoice_btn": "📄 Hisob",
+    "statuses": {
+      "draft":      "Qoralama",
+      "pending_1c": "1C ga yuborilmoqda",
+      "invoiced":   "To'lov kutilmoqda",
+      "paid":       "To'langan",
+      "shipped":    "Jo'natilgan",
+      "delivered":  "Yetkazib berilgan",
+      "cancelled":  "Bekor qilingan"
+    }
+  },
+  "language": {
+    "prompt":  "Tilni tanlang:",
+    "ru_btn":  "🇷🇺 Русский",
+    "uz_btn":  "🇺🇿 O'zbek",
+    "changed": "Til o'zbekchaga o'zgartirildi."
+  }
+}

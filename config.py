@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     BOT_TOKEN: str
     ADMIN_TELEGRAM_IDS: str = ""
+    WEBAPP_URL: str = ""
 
     DATABASE_URL: str = "postgresql+asyncpg://medbot:medbot@localhost:5432/medbot"
     REDIS_URL: str = "redis://localhost:6379/0"

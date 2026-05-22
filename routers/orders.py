@@ -1,91 +1,61 @@
-"""История заказов клиента."""
+"""Read-only last-5 orders view."""
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import (
-    Message, CallbackQuery,
-    InlineKeyboardMarkup, InlineKeyboardButton, URLInputFile,
-)
-from sqlalchemy import select, desc
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from sqlalchemy import desc, select
 
 from db import get_session
+from i18n import t
 from models import Order
-from utils import require_active_user, format_money, status_label
+from utils import require_active_user
 
 router = Router()
 
+_ORDERS_LABELS = frozenset({t("menu.orders", "ru"), t("menu.orders", "uz")})
+
 
 @router.message(Command("orders"))
-@router.message(F.text == "📋 Мои заказы")
+@router.message(F.text.in_(_ORDERS_LABELS))
 async def list_orders(msg: Message):
     user = await require_active_user(msg)
     if not user:
         return
+
+    lang = user.language or "ru"
 
     async with get_session() as db:
         result = await db.execute(
             select(Order)
             .where(Order.user_id == user.id)
             .order_by(desc(Order.created_at))
-            .limit(20)
+            .limit(5)
         )
         orders = result.scalars().all()
 
     if not orders:
-        await msg.answer("У вас пока нет заказов.")
+        await msg.answer(t("orders.empty", lang))
         return
 
-    text = "<b>Ваши последние заказы:</b>\n\n"
-    rows = []
+    text = t("orders.header", lang)
+    invoice_buttons: list[list[InlineKeyboardButton]] = []
+
     for o in orders:
-        title = f"№ {o.invoice_number or o.id[:8]}"
+        order_num = o.invoice_number or o.id[:8]
+        date_str = o.created_at.strftime("%Y-%m-%d %H:%M")
+        status = t(f"orders.statuses.{o.status}", lang)
+        total = f"{float(o.total_amount):,.0f} сум".replace(",", " ")
+
         text += (
-            f"• {title} — {format_money(o.total_amount)}\n"
-            f"  {status_label(o.status)} · {o.created_at.strftime('%d.%m.%Y')}\n\n"
+            f"\n<b>№ {order_num}</b>\n"
+            f"📅 {date_str}  •  {status}\n"
+            f"💰 {total}\n"
         )
-        rows.append([InlineKeyboardButton(
-            text=f"{title} · {status_label(o.status)}",
-            callback_data=f"order:{o.id}",
-        )])
 
-    await msg.answer(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
+        if o.invoice_url:
+            invoice_buttons.append([InlineKeyboardButton(
+                text=f"{t('orders.invoice_btn', lang)} — № {order_num}",
+                url=o.invoice_url,
+            )])
 
-
-@router.callback_query(F.data.startswith("order:"))
-async def show_order(cb: CallbackQuery):
-    order_id = cb.data.split(":")[1]
-
-    async with get_session() as db:
-        order = await db.get(Order, order_id)
-        if not order:
-            await cb.answer("Заказ не найден", show_alert=True)
-            return
-
-        from models import OrderItem, Product
-        result = await db.execute(
-            select(OrderItem, Product)
-            .join(Product, Product.id == OrderItem.product_id)
-            .where(OrderItem.order_id == order_id)
-        )
-        items = result.all()
-
-    text = (
-        f"<b>Заказ № {order.invoice_number or order.id[:8]}</b>\n\n"
-        f"Статус: {status_label(order.status)}\n"
-        f"Создан: {order.created_at.strftime('%d.%m.%Y %H:%M')}\n\n"
-        f"<b>Состав заказа:</b>\n"
-    )
-    for item, product in items:
-        text += f"• {product.name}\n  {item.quantity} × {format_money(item.unit_price)} = {format_money(item.subtotal)}\n"
-    text += f"\n<b>Итого: {format_money(order.total_amount)}</b>"
-
-    if order.comment:
-        text += f"\n\nКомментарий: {order.comment}"
-
-    await cb.message.answer(text)
-
-    if order.status == "invoiced" and order.invoice_url:
-        await cb.message.answer_document(
-            URLInputFile(order.invoice_url, filename=f"invoice_{order.invoice_number}.pdf"),
-            caption="📄 Счёт на оплату",
-        )
-    await cb.answer()
+    kb = InlineKeyboardMarkup(inline_keyboard=invoice_buttons) if invoice_buttons else None
+    await msg.answer(text, reply_markup=kb, disable_web_page_preview=True)

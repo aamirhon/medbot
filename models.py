@@ -65,6 +65,9 @@ class User(Base):
     role:        Mapped[str] = mapped_column(String(20), default="client")
     org_id:      Mapped[str | None] = mapped_column(ForeignKey("organizations.id"), nullable=True)
     status:      Mapped[str] = mapped_column(String(20), default="pending")
+    # "ru" | "uz" — set at registration, updated by language switcher.
+    # NOTE: existing databases need: ALTER TABLE users ADD COLUMN language VARCHAR(5) DEFAULT 'ru';
+    language:    Mapped[str] = mapped_column(String(5), default="ru", server_default="ru")
     created_at:  Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
     organization: Mapped["Organization | None"] = relationship(back_populates="users")

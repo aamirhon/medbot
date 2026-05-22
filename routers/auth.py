@@ -12,11 +12,12 @@ from aiogram.types import Message, ReplyKeyboardRemove
 
 from config import settings
 from db import get_session
-from keyboards import main_menu_kb, confirm_kb
+from keyboards import confirm_kb
 from models import User, Organization
+from routers.main_menu import build_main_menu_kb, send_main_menu
 from services.onec_client import Client1C, ClientNotFound, OneCError
 from services.sync import make_client
-from utils import get_user, tier_label
+from utils import get_user_with_org
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -29,13 +30,10 @@ class RegStates(StatesGroup):
 
 @router.message(CommandStart())
 async def cmd_start(msg: Message, state: FSMContext):
-    user = await get_user(msg.from_user.id)
+    user, org = await get_user_with_org(msg.from_user.id)
 
     if user and user.status == "active":
-        await msg.answer(
-            f"С возвращением, {user.first_name}!",
-            reply_markup=main_menu_kb(user.role),
-        )
+        await send_main_menu(msg, user, org)
         return
 
     if user and user.status == "pending":
@@ -75,13 +73,14 @@ async def step_inn(msg: Message, state: FSMContext):
                 role="client",
                 org_id=existing_org.id,
                 status="active",
+                language="ru",
             )
             db.add(user)
             await db.commit()
             await state.clear()
             await msg.answer(
                 f"Добавили вас в организацию {existing_org.name}.",
-                reply_markup=main_menu_kb("client"),
+                reply_markup=build_main_menu_kb("ru"),
             )
             return
 
@@ -158,6 +157,7 @@ async def step_confirm(msg: Message, state: FSMContext):
             role="admin" if is_admin else "client",
             org_id=org.id,
             status="active",
+            language="ru",
         )
         db.add(user)
         await db.commit()
@@ -179,7 +179,7 @@ async def step_confirm(msg: Message, state: FSMContext):
             "Используйте меню ниже для работы с каталогом."
         )
 
-    await msg.answer(welcome, reply_markup=main_menu_kb(user.role))
+    await msg.answer(welcome, reply_markup=build_main_menu_kb("ru"))
 
 
 @router.message(RegStates.confirm, F.text == "Отмена")
