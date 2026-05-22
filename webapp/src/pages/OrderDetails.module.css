@@ -1,6 +1,15 @@
 .page {
   padding: 16px;
   padding-bottom: calc(var(--nav-height) + 24px);
+  max-width: var(--container-max, 1200px);
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .page {
+    max-width: 720px;
+    padding: 20px var(--container-px, 24px) calc(var(--nav-height) + 24px);
+  }
 }
 
 /* ─── Loading / error ──────────────────────────────────────────────────────── */
@@ -122,6 +131,20 @@
 
 .docBtn:active {
   opacity: 0.7;
+}
+
+@media (min-width: 640px) {
+  .docButtons {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .docBtn {
+    flex: 1 1 auto;
+    min-width: 160px;
+    width: auto;
+    text-align: center;
+  }
 }
 
 .docsHint {

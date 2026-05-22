@@ -24,6 +24,10 @@
 
   /* Высота нижней навигации — используется для padding-bottom страниц */
   --nav-height: 64px;
+
+  /* Responsive container */
+  --container-max:    1200px;
+  --container-px:     16px;
 }
 
 /* Telegram dark theme — переопределяем переменные */
@@ -44,6 +48,16 @@
   padding: 0;
 }
 
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 17px;
+  }
+}
+
 html, body, #root {
   height: 100%;
 }
@@ -58,4 +72,21 @@ body {
 a {
   color: var(--color-accent);
   text-decoration: none;
+}
+
+/* ─── Responsive container ───────────────────────────────────────────────── */
+
+.app-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-inline: var(--container-px);
+}
+
+@media (min-width: 640px) {
+  :root { --container-px: 24px; }
+}
+
+@media (min-width: 1024px) {
+  :root { --container-px: 32px; }
 }

@@ -11,17 +11,19 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.brand}>
-        <span className={styles.logo}>Albatros</span>
-        <span className={styles.tagline}>Healthcare</span>
+      <div className={styles.inner}>
+        <div className={styles.brand}>
+          <span className={styles.logo}>Albatros</span>
+          <span className={styles.tagline}>Healthcare</span>
+        </div>
+        <button
+          className={styles.langButton}
+          onClick={toggleLanguage}
+          title={t('common.language')}
+        >
+          {i18n.language === 'ru' ? 'O\'Z' : 'RU'}
+        </button>
       </div>
-      <button
-        className={styles.langButton}
-        onClick={toggleLanguage}
-        title={t('common.language')}
-      >
-        {i18n.language === 'ru' ? 'O\'Z' : 'RU'}
-      </button>
     </header>
   );
 }

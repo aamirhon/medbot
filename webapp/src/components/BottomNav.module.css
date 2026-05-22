@@ -4,10 +4,37 @@
   left: 0;
   right: 0;
   display: flex;
+  justify-content: center;
   background: var(--color-bg);
   border-top: 1px solid var(--color-border);
   padding: 6px 0 max(6px, env(safe-area-inset-bottom));
   z-index: 10;
+}
+
+/* Inner row — contains the actual tabs */
+.navInner {
+  display: flex;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .nav {
+    border-top: none;
+  }
+  .navInner {
+    max-width: 640px;
+    border-radius: 16px 16px 0 0;
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 1024px) {
+  .navInner {
+    max-width: 720px;
+  }
 }
 
 .tab {

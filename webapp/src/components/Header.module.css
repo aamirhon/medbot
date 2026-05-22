@@ -1,13 +1,20 @@
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 10;
+  /* Full-width background */
+  width: 100%;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px var(--container-px, 16px);
+  max-width: var(--container-max, 1200px);
+  margin: 0 auto;
 }
 
 .brand {
@@ -40,6 +47,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .langButton:hover {
@@ -48,4 +56,14 @@
 
 .langButton:active {
   transform: scale(0.96);
+}
+
+/* Tablet+: slightly larger logo and more breathing room */
+@media (min-width: 640px) {
+  .logo {
+    font-size: 22px;
+  }
+  .tagline {
+    font-size: 13px;
+  }
 }

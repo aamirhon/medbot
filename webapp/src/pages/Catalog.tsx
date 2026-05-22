@@ -221,8 +221,8 @@ export default function Catalog() {
       </div>
 
       {/* ── Панель фильтров ────────────────────────────────────────────── */}
-      {showFilters && (
-        <div className={styles.filterPanel}>
+      {/* filterPanelHidden hides on mobile when !showFilters; CSS forces visible on tablet+ */}
+      <div className={`${styles.filterPanel} ${showFilters ? '' : styles.filterPanelHidden}`}>
           {/* Бренд */}
           <div className={styles.filterRow}>
             <label className={styles.filterLabel}>{t("catalog.brand")}</label>
@@ -301,7 +301,6 @@ export default function Catalog() {
             </button>
           )}
         </div>
-      )}
 
       {/* ── Заголовок раздела + переключатель вида ──────────────────────── */}
       <div className={styles.toolbar}>

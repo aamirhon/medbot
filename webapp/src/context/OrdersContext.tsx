@@ -3,8 +3,7 @@ import type { ReactNode } from 'react';
 import { orderApi } from '../api';
 import type { OrderListItem } from '../api';
 
-const LS_PENDING = 'orders.lastSeen.pendingPayment';
-const LS_PAID    = 'orders.lastSeen.paid';
+const LS_PAID = 'orders.lastSeen.paid';
 
 function readLS(key: string): number {
   const v = localStorage.getItem(key);
@@ -36,8 +35,7 @@ export const OrdersContext = createContext<OrdersContextValue>({
 export function OrdersProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<OrderListItem[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [lastSeenPending, setLastSeenPending] = useState(() => readLS(LS_PENDING));
-  const [lastSeenPaid,    setLastSeenPaid]    = useState(() => readLS(LS_PAID));
+  const [lastSeenPaid, setLastSeenPaid] = useState(() => readLS(LS_PAID));
 
   const pendingPaymentCount = orders
     ? orders.filter((o) => o.status === 'invoiced').length
@@ -46,7 +44,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     ? orders.filter((o) => ['paid', 'shipped', 'completed'].includes(o.status)).length
     : 0;
 
-  const pendingPaymentBadge = Math.max(0, pendingPaymentCount - lastSeenPending);
+  // pending-payment badge = live count; clears only when orders are actually paid
+  const pendingPaymentBadge = pendingPaymentCount;
   const paidBadge           = Math.max(0, paidCount - lastSeenPaid);
 
   const refreshOrders = async () => {
@@ -66,9 +65,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const markOrdersSeen = () => {
-    localStorage.setItem(LS_PENDING, String(pendingPaymentCount));
-    localStorage.setItem(LS_PAID,    String(paidCount));
-    setLastSeenPending(pendingPaymentCount);
+    // only the "paid" badge uses seen-tracking; pending stays until orders are paid
+    localStorage.setItem(LS_PAID, String(paidCount));
     setLastSeenPaid(paidCount);
   };
 

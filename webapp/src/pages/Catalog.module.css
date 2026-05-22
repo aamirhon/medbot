@@ -1,20 +1,23 @@
-/* ─── Страница ──────────────────────────────────────────────────────────── */
+/* ─── Page ───────────────────────────────────────────────────────────────── */
 
 .page {
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px; /* место под BottomNav */
+  padding: 0 var(--container-px, 16px) calc(var(--nav-height) + 20px);
+  max-width: var(--container-max, 1200px);
+  margin: 0 auto;
   min-height: 100vh;
   background: var(--tg-theme-bg-color, #ffffff);
 }
 
-/* ─── Поиск ──────────────────────────────────────────────────────────────── */
+/* ─── Search bar ─────────────────────────────────────────────────────────── */
 
+/* Break out of .page's padding so the background fills the full page width */
 .searchBar {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 10px 0;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -24,7 +27,7 @@
 
 .searchInput {
   flex: 1;
-  height: 38px;
+  height: 40px;
   padding: 0 12px;
   border-radius: 10px;
   border: 1.5px solid var(--tg-theme-secondary-bg-color, #e0e0e0);
@@ -41,8 +44,8 @@
 
 .filterToggle {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
   border: 1.5px solid var(--tg-theme-secondary-bg-color, #e0e0e0);
   background: var(--tg-theme-secondary-bg-color, #f5f5f5);
@@ -61,6 +64,13 @@
   color: var(--tg-theme-button-text-color, #fff);
 }
 
+/* On tablet+ the filter panel is always shown — hide the toggle button */
+@media (min-width: 640px) {
+  .filterToggle {
+    display: none;
+  }
+}
+
 .filterBadge {
   position: absolute;
   top: 5px;
@@ -72,10 +82,10 @@
   border: 1.5px solid var(--tg-theme-bg-color, #fff);
 }
 
-/* ─── Панель фильтров ────────────────────────────────────────────────────── */
+/* ─── Filter panel ───────────────────────────────────────────────────────── */
 
 .filterPanel {
-  padding: 12px 14px 14px;
+  padding: 12px 0 14px;
   background: var(--tg-theme-secondary-bg-color, #f7f7f7);
   border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #e8e8e8);
   display: flex;
@@ -83,10 +93,38 @@
   gap: 10px;
 }
 
+/* Hidden state (mobile only) */
+.filterPanelHidden {
+  display: none;
+}
+
+/* Tablet+: always visible, single row */
+@media (min-width: 640px) {
+  .filterPanel {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  /* Force visible even when filterPanelHidden is applied */
+  .filterPanelHidden {
+    display: flex;
+  }
+}
+
 .filterRow {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .filterRow:nth-child(1) { flex: 1 1 160px; } /* brand */
+  .filterRow:nth-child(2) { flex: 1 1 160px; } /* category */
+  .filterRow:nth-child(3) { flex: 1 1 140px; } /* price */
+  .filterRow:nth-child(4) { flex: 0 0 auto;  } /* checkbox */
 }
 
 .filterLabel {
@@ -96,9 +134,16 @@
   flex-shrink: 0;
 }
 
+/* Labels are redundant on tablet+ since selects have placeholder options */
+@media (min-width: 640px) {
+  .filterLabel {
+    display: none;
+  }
+}
+
 .filterSelect {
   flex: 1;
-  height: 34px;
+  height: 38px;
   padding: 0 8px;
   border-radius: 8px;
   border: 1.5px solid var(--tg-theme-secondary-bg-color, #e0e0e0);
@@ -117,7 +162,7 @@
 
 .priceInput {
   flex: 1;
-  height: 34px;
+  height: 38px;
   padding: 0 8px;
   border-radius: 8px;
   border: 1.5px solid var(--tg-theme-secondary-bg-color, #e0e0e0);
@@ -139,6 +184,7 @@
   font-size: 14px;
   color: var(--tg-theme-text-color, #000);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .checkboxLabel input[type="checkbox"] {
@@ -157,15 +203,17 @@
   font-size: 14px;
   cursor: pointer;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* ─── Тулбар (заголовок + переключатель вида) ────────────────────────────── */
+/* ─── Toolbar ────────────────────────────────────────────────────────────── */
 
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px 6px;
+  padding: 10px 0 6px;
 }
 
 .toolbarLeft {
@@ -217,13 +265,12 @@
   color: #fff;
 }
 
-/* ─── Список товаров ─────────────────────────────────────────────────────── */
+/* ─── List view ──────────────────────────────────────────────────────────── */
 
 .listContainer {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 0 14px;
 }
 
 .listItem {
@@ -265,13 +312,27 @@
   align-items: center;
 }
 
-/* ─── Плитка товаров ─────────────────────────────────────────────────────── */
+/* ─── Grid view ──────────────────────────────────────────────────────────── */
 
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 10px;
-  padding: 8px 14px;
+  padding: 8px 0;
+}
+
+@media (min-width: 640px) {
+  .gridContainer {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gridContainer {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
 }
 
 .gridItem {
@@ -304,9 +365,11 @@
 .gridItemFooter {
   margin-top: auto;
   padding-top: 6px;
+  display: flex;
+  justify-content: flex-end;
 }
 
-/* ─── Цены вариантов ─────────────────────────────────────────────────────── */
+/* ─── Variant prices ─────────────────────────────────────────────────────── */
 
 .variantPrices {
   display: flex;
@@ -338,7 +401,7 @@
   font-style: italic;
 }
 
-/* ─── Кнопки ─────────────────────────────────────────────────────────────── */
+/* ─── Add button / on-request tag ───────────────────────────────────────── */
 
 .btnAdd {
   padding: 6px 12px;
@@ -363,7 +426,7 @@
   font-style: italic;
 }
 
-/* ─── Пагинация ──────────────────────────────────────────────────────────── */
+/* ─── Pagination ─────────────────────────────────────────────────────────── */
 
 .pagination {
   display: flex;
@@ -374,13 +437,13 @@
 }
 
 .pageBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   border: 1.5px solid var(--tg-theme-secondary-bg-color, #e0e0e0);
   background: transparent;
   color: var(--tg-theme-text-color, #000);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -400,7 +463,7 @@
   text-align: center;
 }
 
-/* ─── Состояния загрузки / ошибки / пустой ──────────────────────────────── */
+/* ─── Loading / error / empty ────────────────────────────────────────────── */
 
 .loader {
   padding: 40px;
@@ -410,7 +473,7 @@
 }
 
 .errorBox {
-  padding: 32px 20px;
+  padding: 32px 0;
   text-align: center;
   color: var(--tg-theme-hint-color, #8e8e93);
 }
@@ -431,7 +494,7 @@
 }
 
 .emptyBox {
-  padding: 60px 20px;
+  padding: 60px 0;
   text-align: center;
   color: var(--tg-theme-hint-color, #8e8e93);
   font-size: 15px;

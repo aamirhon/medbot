@@ -1,6 +1,15 @@
 .page {
   padding: 16px;
   padding-bottom: calc(var(--nav-height) + 24px);
+  max-width: var(--container-max, 1200px);
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .page {
+    max-width: 640px;
+    padding: 20px var(--container-px, 24px) calc(var(--nav-height) + 24px);
+  }
 }
 
 /* ─── Warning ──────────────────────────────────────────────────────────────── */

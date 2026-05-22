@@ -14,6 +14,7 @@ export default function App() {
   return (
     <CartProvider>
       <OrdersProvider>
+        {/* Header is full-width; inner content centers itself */}
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/orders/:id" element={<OrderDetails />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        {/* BottomNav is full-width fixed; inner tabs center themselves */}
         <BottomNav />
       </OrdersProvider>
     </CartProvider>
